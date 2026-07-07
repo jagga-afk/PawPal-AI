@@ -44,14 +44,14 @@ pip install -r requirements.txt
 
 ## 🖥️ Sample Output
 
-Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
+The terminal script below demonstrates the current scheduling output from running the logic layer:
 
-```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
+```text
+Today's Schedule
+====================
+- Litter check (15 min)
+- Morning walk (20 min)
+- Feed breakfast (10 min)
 ```
 
 ## 🧪 Testing PawPal+
