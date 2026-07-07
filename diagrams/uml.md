@@ -1,3 +1,7 @@
+# PawPal+ Class Diagram
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#1f2937','primaryTextColor':'#ffffff','primaryBorderColor':'#ffffff','lineColor':'#ffffff','secondaryColor':'#374151','tertiaryColor':'#111827','fontSize':'16px','fontFamily':'Arial'}}}%%
 classDiagram
     class Owner {
         +name: str
@@ -54,3 +58,4 @@ classDiagram
     Scheduler --> DailyPlan : creates
     Scheduler --> TaskManager : evaluates
     DailyPlan --> Task : includes
+```
