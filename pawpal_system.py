@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from typing import List
 
 
@@ -11,6 +12,8 @@ class Task:
         priority: int = 1,
         frequency: str = "once",
         completed: bool = False,
+        time: str = "",
+        pet_name: str | None = None,
     ) -> None:
         """Create a single pet-care task with timing and priority details."""
         self.description = description
@@ -18,6 +21,8 @@ class Task:
         self.priority = priority
         self.frequency = frequency
         self.completed = completed
+        self.time = time
+        self.pet_name = pet_name
 
     def complete(self) -> None:
         """Mark the task as completed."""
@@ -26,6 +31,22 @@ class Task:
     def mark_incomplete(self) -> None:
         """Mark the task as not completed."""
         self.completed = False
+
+    def mark_complete_and_schedule_next(self) -> "Task | None":
+        """Mark the task complete and create a recurring follow-up task."""
+        self.complete()
+        if self.frequency.lower() in {"daily", "weekly"}:
+            delta_days = 1 if self.frequency.lower() == "daily" else 7
+            next_time = datetime.now().date() + timedelta(days=delta_days)
+            return Task(
+                description=self.description,
+                duration_minutes=self.duration_minutes,
+                priority=self.priority,
+                frequency=self.frequency,
+                completed=False,
+                time=next_time.strftime("%Y-%m-%d"),
+            )
+        return None
 
     def update(self, **kwargs: object) -> None:
         """Update task attributes using keyword arguments."""
@@ -52,6 +73,7 @@ class Pet:
 
     def add_task(self, task: Task) -> None:
         """Attach a new task to this pet."""
+        task.pet_name = self.name
         self._tasks.append(task)
 
     def remove_task(self, task: Task) -> None:
@@ -116,3 +138,26 @@ class Scheduler:
                 skipped.append(task)
 
         return scheduled, skipped
+
+    def sort_by_time(self, tasks: List[Task]) -> List[Task]:
+        """Sort tasks by their time value, treating missing values as the end."""
+        return sorted(tasks, key=lambda task: task.time or "99:99")
+
+    def filter_tasks(self, tasks: List[Task], pet_name: str | None = None, completed_only: bool = False) -> List[Task]:
+        """Filter tasks by pet name and completion status."""
+        filtered: List[Task] = []
+        for task in tasks:
+            matches_pet = not pet_name or task.pet_name == pet_name
+            matches_status = not completed_only or task.completed
+            if matches_pet and matches_status:
+                filtered.append(task)
+        return filtered
+
+    def detect_conflicts(self, tasks: List[Task]) -> List[str]:
+        """Return simple warning messages when tasks overlap in time."""
+        warnings: List[str] = []
+        for index, task in enumerate(tasks):
+            for other in tasks[index + 1 :]:
+                if task.time and other.time and task.time == other.time:
+                    warnings.append(f"Conflict: {task.description} and {other.description} share time {task.time}.")
+        return warnings
