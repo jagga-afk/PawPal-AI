@@ -1,0 +1,48 @@
+classDiagram
+    class Owner {
+        +name: str
+        +availability_minutes: int
+        +preferences: list[str]
+        +pets: list[Pet]
+        +add_preference(preference: str)
+        +update_availability(minutes: int)
+        +add_pet(pet: Pet)
+        +get_all_tasks() list[Task]
+    }
+
+    class Pet {
+        +name: str
+        +species: str
+        +age: int
+        +special_needs: list[str]
+        +notes: str
+        +add_task(task: Task)
+        +remove_task(task: Task)
+        +get_tasks() list[Task]
+    }
+
+    class Task {
+        +description: str
+        +duration_minutes: int
+        +priority: int
+        +frequency: str
+        +completed: bool
+        +time: str
+        +pet_name: str | None
+        +complete()
+        +mark_incomplete()
+        +mark_complete_and_schedule_next() Task | None
+        +update(**kwargs)
+    }
+
+    class Scheduler {
+        +plan_day(owner: Owner, available_minutes: int) tuple[list[Task], list[Task]]
+        +sort_by_time(tasks: list[Task]) list[Task]
+        +filter_tasks(tasks: list[Task], pet_name: str | None, completed_only: bool) list[Task]
+        +detect_conflicts(tasks: list[Task]) list[str]
+    }
+
+    Owner "1" --> "1..*" Pet : owns
+    Pet "1" --> "0..*" Task : contains
+    Scheduler --> Owner : plans for
+    Scheduler --> Task : evaluates

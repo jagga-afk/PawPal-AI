@@ -3,8 +3,10 @@ classDiagram
         +name: str
         +availability_minutes: int
         +preferences: list[str]
-        +add_preference()
-        +update_availability()
+        +pets: list[Pet]
+        +task_manager: TaskManager
+        +add_preference(preference: str)
+        +update_availability(minutes: int)
     }
 
     class Pet {
@@ -22,19 +24,19 @@ classDiagram
         +priority: int
         +preferred_time: str
         +recurring: bool
-        +update_task()
+        +update_task(...)
     }
 
     class TaskManager {
         +tasks: list[Task]
         +add_task(task)
-        +edit_task(task)
-        +remove_task(task)
+        +edit_task(index, task)
+        +remove_task(index)
         +sort_tasks()
     }
 
     class DailyPlan {
-        +date: date
+        +date: str
         +scheduled_tasks: list[Task]
         +reasoning: list[str]
         +display_plan()
@@ -42,15 +44,19 @@ classDiagram
 
     class Scheduler {
         +generate_plan(owner, pet, task_manager) DailyPlan
-        +prioritize_tasks()
-        +resolve_conflicts()
-        +explain_reasoning()
+        +prioritize_tasks(tasks)
+        +resolve_conflicts(tasks)
+        +explain_reasoning(tasks)
     }
 
-    Owner "1" --> "1" Pet : owns
     Owner "1" --> "1" TaskManager : manages
-    TaskManager "1" --> "0..*" Task : contains
+    Owner "1" --> "1..*" Pet : owns
     Pet "1" --> "0..*" Task : requires
-    Scheduler --> DailyPlan : creates
+    TaskManager "1" --> "0..*" Task : contains
+    Scheduler --> Owner : evaluates
+    Scheduler --> Pet : evaluates
     Scheduler --> TaskManager : evaluates
+    Scheduler --> DailyPlan : creates
+    DailyPlan --> Owner : for
+    DailyPlan --> Pet : for
     DailyPlan --> Task : includes
